@@ -9,6 +9,7 @@ using DunkinDonuts.Models;
 using Microsoft.AspNetCore.Http;
 using DunkinDonuts.DAL;
 using DunkinDonuts.DAL.EntityModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace DunkinDonuts.Controllers
 {
@@ -84,7 +85,7 @@ namespace DunkinDonuts.Controllers
             List<ItemViewModel> itemsToView = new List<ItemViewModel>();
             int UserId = 0;
 
-            if  (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserFName")))
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserFName")))
             {
                 UserId = (int)(HttpContext.Session.GetInt32("UserId"));
 
@@ -106,7 +107,7 @@ namespace DunkinDonuts.Controllers
                     ViewBag.Name = HttpContext.Session.GetString("UserFName");
                 }
 
-                
+
             }
             else
             {
@@ -145,7 +146,7 @@ namespace DunkinDonuts.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("Items");
             }
-            else 
+            else
             {
                 return RedirectToAction("InsufficientFunds");
             }
@@ -185,10 +186,37 @@ namespace DunkinDonuts.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public async Task<IActionResult> Delete(int? id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var userItems = await _context.UserItems
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (userItems == null)
+            {
+                return NotFound();
+            }
+
+            return View(userItems);
         }
-    }
+
+        // POST: UserItems/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var userItems = await _context.UserItems.FindAsync(id);
+            _context.UserItems.Remove(userItems);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(UserItems));
+        }
+
+        private bool UserItemsExists(int id)
+        {
+            return _context.UserItems.Any(e => e.Id == id);
+        }
+    } 
 }
