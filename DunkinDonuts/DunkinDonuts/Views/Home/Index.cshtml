@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+    <div class="text-center">
+        @if (ViewBag.Name != null)
+        {
+            <h1 class="display-4">Welcome to Dunkin' Donuts, @ViewBag.Name</h1>
+        }
+        else
+        {
+        <h1 class="display-4">Welcome to Dunkin' Donuts</h1>
+        }
+    </div>

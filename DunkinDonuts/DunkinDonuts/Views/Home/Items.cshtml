@@ -1,0 +1,61 @@
+﻿@model IEnumerable<ItemViewModel>
+
+@{
+    ViewData["Title"] = "Shop";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Items Available for Purchase</h1>
+@if (ViewBag.Name != null)
+{
+<p class="float-left">Available Balance: $@Model.ToList()[0].RemainingBalance</p>
+<a class="float-right" asp-controller="Home" asp-action="UserItems">View Previously Purchased Items</a>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantityAvailable)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.QuantityAvailable)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @if (ViewBag.Name != null)
+                {
+                    if (item.QuantityAvailable != 0)
+                    {
+                    <a asp-action="Buy" asp-route-itemid="@item.Id" asp-route-userid="@item.UserId">Buy</a>
+                    }
+                }
+
+            </td>
+        </tr>
+        }
+        
+    </tbody>
+</table>
